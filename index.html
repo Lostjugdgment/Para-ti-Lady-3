@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Flor para Lady</title>
+    <script src="https://skulpt.org/js/skulpt.min.js" type="text/javascript"></script>
+    <script src="https://skulpt.org/js/skulpt-stdlib.js" type="text/javascript"></script>
+    <style>
+        /* Estilos para que se vea bien en la página */
+        body { 
+            background-color: black; 
+            color: white; 
+            text-align: center; 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h3 {
+            margin-bottom: 20px;
+        }
+        /* El 'lienzo' donde se dibujará la tortuga */
+        #mycanvas { 
+            border: 1px solid #444; 
+            margin: 0 auto; /* Centra el lienzo */
+        }
+    </style>
+</head>
+<body>
+    <h3>Flor generada con Python</h3>
+
+    <div id="mycanvas"></div>
+
+    <script type="text/python">
+# Se importa todo lo necesario
+from turtle import *
+import colorsys
+import math
+import random
+
+# --- El código de tu archivo FlorAmarillaLady.py empieza aquí ---
+
+# Función para dibujar una flor
+def draw_flower(posx, posy):
+    penup()
+    goto(posx, posy)
+    pendown()
+    h = 0
+    for i in range(16):
+        for j in range(18):
+            c= colorsys.hsv_to_rgb(0.125 , 1, 1)
+            color(c)
+            h += 0.005
+            rt(90)
+            circle(150 - j * 6, 90)
+            lt(90)
+            circle(150 - j * 6, 90)
+            rt(180)
+        circle(40, 24)
+    # Genera la parte centrall de la flor
+    color("black") 
+    shape("turtle")
+    fillcolor("brown")
+    phi = 137.508 * (math.pi/ 180.0)
+
+    for i in range (200):
+        r = 4 * math.sqrt(i)
+        theta = i*phi
+        x = r * math.cos(theta)
+        y = r * math.sin(theta)
+        posx1 = posx+x
+        posy1 = posy+y+40
+        penup()
+        goto(posx1, posy1)
+        setheading(i * 137.508)
+        pendown()
+        stamp()
+
+# Función para dibujar el tallo con una hoja
+def draw_stem_with_leaf(x, y):
+    penup()
+    goto(x, y)
+    pendown()
+    pos_leaf_y = y-200
+    
+    # Dibuja el tallo recto y más grande
+    c= colorsys.hsv_to_rgb(0.29 , 1, 0.40)
+    color(c)
+    pensize(12)
+    setheading(270)
+    fd(200)
+
+    # Dibuja el tallo curvo
+    setheading(90)
+    circle(100, -70)
+    
+    # Dibuja la hoja más grande
+    penup()
+    goto(x, pos_leaf_y)
+    pendown()
+    pensize(2)
+    begin_fill()
+    setheading(135)
+    circle(50, 90)
+    setheading(45)
+    circle(50, 90)
+    end_fill()
+    
+    # Restaura el color y el grosor del lápiz
+    penup()
+    pensize(1)
+    color("black")
+
+# Función para generar estrellitas de forma aleatoria
+def draw_random_start(amount):
+    for _ in range(amount):
+        penup()
+        x = random.randint(-400, 400)
+        y = random.randint(-400, 400)
+        goto(x, y)
+        pendown()
+        star_color = colorsys.hsv_to_rgb(random.random(), 1, 1)
+        color("white")
+        begin_fill()
+        for _ in range(5):
+            forward(11)
+            right(144)
+        end_fill()
+
+# --- Zona principal de ejecución ---
+def main():
+    # Configuración del lienzo de Turtle para la web
+    setup(850, 850) # Tamaño del lienzo
+    bgcolor("black")
+    speed(0) # La velocidad más rápida
+    tracer(0, 0) # Desactiva la animación para dibujar todo al instante
+    hideturtle() # Esconde la tortuga desde el inicio
+
+    # Dibujar los tallos
+    draw_stem_with_leaf(0, -50)
+
+    # Dibujar flor
+    goto(0,0)
+    setheading(0)
+    draw_flower(0, 50)
+
+    # Dibuja las estrellas aleatorias
+    draw_random_start(50)
+
+    # Escribir el mensaje
+    penup()
+    goto(0, 350)
+    pendown()
+    color("white")
+    write("Para Ti", align="center", font=("Arial", 16, "normal"))
+
+    penup()
+    goto(0, -300)
+    pendown()
+    write("Lady <3", align="center", font=("Arial", 16, "normal"))
+    
+    # Actualiza la pantalla para mostrar el dibujo final
+    update()
+
+# --- Esta parte es para que Skulpt ejecute el código ---
+Sk.configure({
+    "output": lambda text: document.getElementById("output").innerHTML += text,
+    "read": (filename) => Sk.builtinFiles.files[filename]
+});
+
+(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+
+try {
+    Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, main(), true));
+} catch (e) {
+    alert(e.toString());
+}
+    </script>
+</body>
+</html>
